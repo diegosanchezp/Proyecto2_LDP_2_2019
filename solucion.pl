@@ -41,3 +41,59 @@ esResoluble(X):-
 
 % Probar el programa de esta manera
 % esResoluble([[1,9,3],[5,2,6],[4,7,8]]). Retorna true o false.
+
+% ========== Predicado rompecabezas ==========
+
+/* Reemplazar elementos en una lista dado un indice 
+   Funciona simililar a otros lenguajes como c++
+   Por ejemplo para reemplazar el elemento en posicion 0 de un arreglo
+   En c++
+   array[0] = 1
+   En prolog
+   replace([1,2,3], 0, 9, R).
+*/
+
+replace(Lin, Index, Elem,R):- replaceAcc(Lin, Index,0,Elem, [],R).
+
+% Si iterador es igual a al indice reemplazar
+replaceAcc([_|Xs], Index, Index, Elem, Ant,R):- append(Ant, [Elem|Xs], R),!.
+
+% Si no seguir aumentado indice y guardar elementos anteriores
+replaceAcc([X|Xs], Index, Iter, Elem, Ant,R):- 
+    Iter2 is Iter + 1,
+    append(Ant, [X], NAnt),
+    replaceAcc(Xs, Index, Iter2, Elem, NAnt,R).
+
+% Reemplazar elemento de una matriz por otro
+replaceM(TableroIn, [I,J], Elem, TableroOut):-
+    % Obtener fila i
+    nth0(I, TableroIn, FilaI),
+
+    % Actualizar la fila
+    replace(FilaI, J, Elem, R),
+
+    % Actualizar Tablero
+    replace(TableroIn, I, R, TableroOut).
+% Ejemplo de llamada replaceM([[1,9,3],[5,2,6],[4,7,8]],[1,1], 7, TableroOut).
+
+/* Intercambiar elementos de un tablero o matriz 
+   Se intercambia o mueve el elemento en la pos [I1, J1] 
+   a la posicion [I2,J2] y el elemento que estaba en la pos
+   [I2, J2] se mueve a la pos [I1, J1]
+*/
+intercambiar(TableroIn, [I1, J1], [I2,J2], TableroOut):-
+    % Obtener Filas
+    nth0(I1,TableroIn, Fila1),
+    nth0(I2, TableroIn, Fila2),
+
+    % Obtener elemento J de las Filas
+    nth0(J1, Fila1, Elem1),
+    nth0(J2, Fila2, Elem2),
+    
+    % Realizar intercambio entre filas
+    replaceM(TableroIn, [I2,J2], Elem1, To),
+    replaceM(To, [I1, J1], Elem2, TableroOut).
+    
+% Ejemplo de llamada intercambiar([[1,9,3],[5,2,6],[4,7,8]], [0,1], [1,1], Tout).
+
+
